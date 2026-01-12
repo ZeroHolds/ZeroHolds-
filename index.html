@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SupportMe Signup</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #333;
+    }
+    
+    /* Container with decorative effect */
+    .container {
+      position: relative;
+    }
+    
+    .container::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      background: linear-gradient(135deg, #ff813f, #ff5722, #6a11cb, #2575fc);
+      z-index: -1;
+      border-radius: 30px;
+      opacity: 0.5;
+      filter: blur(15px);
+    }
+    
+    /* Signup card */
+    .signup-card {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      width: 100%;
+      max-width: 450px;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Header */
+    h1 {
+      color: #2d3436;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+      background: linear-gradient(to right, #ff813f, #ff5722);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+    
+    .subtitle {
+      color: #636e72;
+      margin-bottom: 30px;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    
+    /* Form styling */
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #2d3436;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    input {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid #dfe6e9;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+      color: #2d3436;
+      font-family: inherit;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #ff813f;
+      background-color: white;
+      box-shadow: 0 0 0 4px rgba(255, 129, 63, 0.2);
+    }
+    
+    input::placeholder {
+      color: #b2bec3;
+    }
+    
+    /* Button */
+    button {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(to right, #ff813f, #ff5722);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 5px 15px rgba(255, 129, 63, 0.3);
+      font-family: inherit;
+    }
+    
+    button:hover {
+      background: linear-gradient(to right, #ff5722, #ff3c00);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 129, 63, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    /* Payment method indicator */
+    .payment-hint {
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+      font-size: 0.85rem;
+      color: #636e72;
+    }
+    
+    .payment-hint::before {
+      content: "💳";
+      margin-right: 8px;
+      font-size: 1rem;
+    }
+    
+    /* Logo/icon styling */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #ff813f, #ff5722);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 8px 20px rgba(255, 129, 63, 0.3);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 500px) {
+      .signup-card {
+        padding: 30px 25px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      input, button {
+        padding: 14px 18px;
+      }
+      
+      .logo {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Success message styling (for JavaScript use) */
+    .success-message {
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 20px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 600;
+    }
+    
+    .success-message::before {
+      content: "✓";
+      font-size: 1.2rem;
+    }
+    
+    /* Footer note */
+    .footer-note {
+      margin-top: 25px;
+      font-size: 0.85rem;
+      color: #636e72;
+      line-height: 1.5;
+    }
+    
+    .footer-note a {
+      color: #ff813f;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="signup-card">
+      <div class="logo-container">
+        <div class="logo">SM</div>
+      </div>
+      
+      <h1>Join SupportMe!</h1>
+      <p class="subtitle">Create your account and start receiving support from your community</p>
+      
+      <div class="form-group">
+        <input type="email" id="email" placeholder="Email address">
+      </div>
+      
+      <div class="form-group">
+        <input type="password" id="password" placeholder="Create a password">
+      </div>
+      
+      <div class="form-group">
+        <input type="text" id="username" placeholder="Choose a username">
+      </div>
+      
+      <div class="form-group">
+        <input type="text" id="payment" placeholder="JazzCash / Easypaisa / QR">
+        <div class="payment-hint">Enter your preferred payment method</div>
+      </div>
+      
+      <button onclick="signup()">Create Account</button>
+      
+      <div class="footer-note">
+        By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+      </div>
+      
+      <!-- Success message placeholder -->
+      <div id="successMessage" class="success-message">
+        Account created successfully!
+      </div>
+    </div>
+  </div>
+  <script>
+    // ← Replace these with your Supabase project info
+    const supabaseUrl = 'YOUR_SUPABASE_URL';
+    const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    async function signup() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value;
+      const payment = document.getElementById('payment').value;
+      
+      // Get success message element
+      const successMessage = document.getElementById('successMessage');
+      if (!email || !password || !username || !payment) {
+        alert("Please fill in all fields!");
+        return;
+      }
+      // 1. Create user auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+      if (authError) { alert("Signup error: " + authError.message); return; }
+      // 2. Insert user info into your table
+      const { data, error } = await supabase.from('users').insert([{
+        username: username,
+        email: email,
+        payment_method: payment
+      }]);
+      if (error) { 
+        alert("Database error: " + error.message); 
+        return; 
+      }
+      // Show success message
+      successMessage.style.display = 'flex';
+      successMessage.textContent = "Signup successful! Check your email for confirmation.";
+      
+      // Clear the form after 2 seconds
+      setTimeout(() => {
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('username').value = '';
+        document.getElementById('payment').value = '';
+        
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+          successMessage.style.display = 'none';
+        }, 5000);
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
